@@ -1,0 +1,118 @@
+/* Container for the entire dashboard */
+.dashboard-container {
+  width: 95%;
+  padding: 20px;
+}
+
+/* Filters section */
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Style individual filter dropdowns */
+.filters div {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Make filters evenly distributed */
+  min-width: 120px; /* Minimum width to prevent too small filters */
+}
+
+.filters label {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.filters select {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Apply button styling */
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  flex-basis: 20%; 
+  text-align: center;
+}
+
+/* Center the Apply button */
+.apply-button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Flex container for the charts row */
+.charts-row {
+  display: flex;
+  justify-content: space-between; /* Ensures space between the two charts */
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1400px; /* Expanded width to fit the screen */
+  gap: 20px; /* Adds space between the charts */
+  margin: 0 auto; /* Center the charts row on the page */
+}
+
+/* Container for individual charts */
+.chart-container {
+  flex: 1; /* Each chart takes equal width */
+  max-height: 600px;
+  overflow-y: auto; /* Enables vertical scrolling */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #fff; /* Ensure charts have white background */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for a cleaner look */
+}
+
+/* Scrollbar styling for the charts */
+.chart-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chart-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+
+.chart-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.chart-container::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .charts-row {
+    flex-direction: column; /* Stack charts vertically on smaller screens */
+  }
+
+  .chart-container {
+    max-height: 500px; /* Adjust max height for smaller screens */
+  }
+
+  .filters {
+    flex-direction: column; /* Stack filters on smaller screens */
+    align-items: flex-start;
+  }
+
+  button {
+    margin-top: 10px;
+    width: 100%; /* Ensure button fills the width on smaller screens */
+  }
+}

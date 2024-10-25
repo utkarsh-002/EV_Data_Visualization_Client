@@ -11,6 +11,9 @@
 # production
 /build
 
+# Ignore Client directory
+/Client
+
 # misc
 .DS_Store
 .env.local
