@@ -1,72 +1,63 @@
-import React from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+// PenetrationChart.js
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import React from "react";
+import Highcharts from "highcharts";
+import Highcharts3D from "highcharts/highcharts-3d";
+import HighchartsReact from "highcharts-react-official";
+
+// Initialize the 3D module
+Highcharts3D(Highcharts);
 
 const PenetrationChart = ({ data }) => {
-  const penetrationChartData = {
-    labels: data.map((item) => item.state), // States for y-axis
-    datasets: [
+  // Aggregate electric vehicles per state
+  const aggregatedElectric = data.reduce((acc, item) => {
+    acc[item.State] = (acc[item.State] || 0) + item.Electric;
+    return acc;
+  }, {});
+
+  const chartData = Object.keys(aggregatedElectric).map((state) => ({
+    name: state,
+    y: aggregatedElectric[state],
+  }));
+
+  const options = {
+    chart: {
+      type: "pie",
+      options3d: {
+        enabled: true,
+        alpha: 45,
+        beta: 0,
+      },
+      backgroundColor: "#ffffff",
+    },
+    title: {
+      text: "Electric Penetration by State",
+    },
+    accessibility: {
+      point: {
+        valueSuffix: "%",
+      },
+    },
+    plotOptions: {
+      pie: {
+        depth: 45,
+        dataLabels: {
+          enabled: true,
+          format: "{point.name}: {point.y} ({point.percentage:.1f}%)",
+        },
+      },
+    },
+    series: [
       {
-        label: "EV Penetration (%)",
-        data: data.map((item) => item.penetration),
-        backgroundColor: "rgba(153, 102, 255, 0.6)",
+        name: "Electric Vehicles",
+        data: chartData,
       },
     ],
   };
 
   return (
     <div className="chart-container">
-      <h3>EV Penetration by State</h3>
-      <Bar
-        data={penetrationChartData}
-        options={{
-          indexAxis: "y", // Displaying states on y-axis
-          scales: {
-            x: {
-              beginAtZero: true, // x-axis starts at 0
-              title: {
-                display: true,
-                text: "Penetration (%)",
-              },
-            },
-            y: {
-              title: {
-                display: true,
-                text: "State",
-              },
-              ticks: {
-                autoSkip: false, // Ensures all states appear on the y-axis
-              },
-            },
-          },
-          plugins: {
-            legend: {
-              display: true,
-              position: "top",
-            },
-          },
-          responsive: true,
-          maintainAspectRatio: false, // Ensure the chart is not distorted
-        }}
-        height={400} // Setting a fixed height for the chart canvas
-      />
+      <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );
 };
