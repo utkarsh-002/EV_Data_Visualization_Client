@@ -1,0 +1,21 @@
+
+.penetration-chart {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+}
+
+@media (min-width: 768px) {
+  .chart-container {
+    width: 45%;
+  }
+}
