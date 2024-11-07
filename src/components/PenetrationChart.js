@@ -1,6 +1,6 @@
 // PenetrationChart.js
 
-import React from "react";
+import {React, useState, useEffect} from "react";
 import Highcharts from "highcharts";
 import Highcharts3D from "highcharts/highcharts-3d";
 import HighchartsExporting from "highcharts/modules/exporting";
@@ -11,9 +11,52 @@ import "./styles/PenetrationChart.css";
 Highcharts3D(Highcharts);
 HighchartsExporting(Highcharts);
 
-const PenetrationChart = ({ data }) => {
+const PenetrationChart = () => {
+
+    const [salesData, setSalesData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch data when the component mounts
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`http://localhost:3000/statewiseSales`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          setSalesData(data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }, []);
+
+    // Show loading message while fetching data
+    if (loading) {
+      return <div>Loading data...</div>;
+    }
+
+    // Show error message if there was an error fetching data
+    if (error) {
+      return <div>Error fetching data: {error}</div>;
+    }
+
   // Aggregate electric vehicles per state
-  const aggregatedElectric = data.reduce((acc, item) => {
+  const aggregatedElectric = salesData.reduce((acc, item) => {
     acc[item.State] = (acc[item.State] || 0) + item.Electric;
     return acc;
   }, {});
@@ -41,7 +84,7 @@ const PenetrationChart = ({ data }) => {
       backgroundColor: "#f0f3f4",
     },
     title: {
-      text: "Top 10 States - Electric Vehicle Penetration (Pie Chart)",
+      text: "Electric Vehicle Penetration by State (All States)"
     },
     tooltip: {
       pointFormat: "<b>{point.y}</b> EVs ({point.percentage:.1f}%)",
@@ -60,7 +103,7 @@ const PenetrationChart = ({ data }) => {
     series: [
       {
         name: "Electric Vehicles",
-        data: topStatesData,
+        data: chartData,
       },
     ],
   };
@@ -72,10 +115,10 @@ const PenetrationChart = ({ data }) => {
       backgroundColor: "#f0f3f4",
     },
     title: {
-      text: "Top 10 States - Electric Vehicle Penetration (Bar Chart)",
+      text: "Electric Vehicle Penetration by State (All States)",
     },
     xAxis: {
-      categories: topStatesData.map((item) => item.name),
+      categories: chartData.map((item) => item.name),
       title: {
         text: null,
       },
@@ -111,7 +154,7 @@ const PenetrationChart = ({ data }) => {
     series: [
       {
         name: "Electric Vehicles",
-        data: topStatesData.map((item) => item.y),
+        data: chartData.map((item) => item.y),
         color: "#1abc9c",
       },
     ],
