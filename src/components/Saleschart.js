@@ -1,7 +1,7 @@
 // SalesChart.js
 
 import React, { useEffect, useState, useMemo } from "react";
-import Highcharts from "highcharts";
+import Highcharts, { color } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import "./styles/Saleschart.css";
 
@@ -19,12 +19,13 @@ const SalesChart = () => {
         const response = await fetch("http://localhost:3000/statewiseSales");
         const result = await response.json();
         setData(result);
-        console.log(result);
-        // Aggregate total sales per state
+        
         const aggregatedData = result.reduce((acc, item) => {
           acc[item.State] = (acc[item.State] || 0) + item.Electric;
           return acc;
         }, {});
+
+        setData(aggregatedData);
 
         // Calculate total sales across all states
         const total = Object.values(aggregatedData).reduce((a, b) => a + b, 0);
@@ -138,15 +139,20 @@ const SalesChart = () => {
       series: [
         {
           name: "EV Sales",
-          data: allStates.map((item, index) => ({
-            name: item.name,
-            y: item.y,
-            color: item.isTop10
-              ? top10Colors[
-                  top10States.findIndex((top) => top.state === item.name)
-                ]
-              : "#7FB3D5",
-          })),
+          data: allStates.map((item) => {
+            const colorIndex = top10States.findIndex(
+              (top) => top.state === item.name
+            );
+            const color =
+              item.isTop10 && colorIndex !== -1
+                ? top10Colors[colorIndex % top10Colors.length]
+                : "#7FB3D5";
+            return {
+              name: item.name,
+              y: item.y,
+              color: color,
+            }; 
+          }),
         },
       ],
       credits: {
@@ -164,14 +170,60 @@ const SalesChart = () => {
     [allStates, top10States]
   );
 
+  const chartData = Object.keys(data).map((state) => ({
+    name: state,
+    y: data[state],
+  }));
+
+  chartData.sort((a, b) => b.y - a.y);
+
+  const pieOptions = {
+    chart: {
+      type: "pie",
+      options3d: {
+        enabled: true,
+        alpha: 45,
+      },
+      backgroundColor: "#f0f3f4",
+    },
+    title: {
+      text: "Electric Vehicle Penetration by State (All States)",
+    },
+    tooltip: {
+      pointFormat: "<b>{point.y}</b> EVs ({point.percentage:.1f}%)",
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: "pointer",
+        depth: 35,
+        dataLabels: {
+          enabled: true,
+          format: "{point.name}: {point.percentage:.1f}%",
+        },
+      },
+    },
+    series: [
+      {
+        name: "Electric Vehicles",
+        data: chartData,
+      },
+    ],
+  };
+
   if (loading)
     return <div className="status-message">Loading sales chart...</div>;
   if (error) return <div className="status-message error">Error: {error}</div>;
 
   return (
+    <>
+    <div className="chart-container">
+        <HighchartsReact highcharts={Highcharts} options={pieOptions} />
+      </div>
     <div className="chart-container">
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
     </div>
+    </>
   );
 };
 

@@ -61,6 +61,11 @@ const PenetrationChart = () => {
     return acc;
   }, {});
 
+  const aggregatedTotal = salesData.reduce((acc, item) => {
+    acc[item.State] = (acc[item.State] || 0) + item.Total;
+    return acc;
+  }, {});
+
   // Convert the aggregated data into an array and sort it
   const chartData = Object.keys(aggregatedElectric).map((state) => ({
     name: state,
@@ -68,6 +73,7 @@ const PenetrationChart = () => {
   }));
 
   chartData.sort((a, b) => b.y - a.y);
+
 
   // Pie Chart Options
   const pieOptions = {
