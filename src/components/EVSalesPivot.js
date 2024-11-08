@@ -1,16 +1,9 @@
 // EVSalesPivot.js
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import HighchartsExporting from "highcharts/modules/exporting";
-import HighchartsFullScreen from "highcharts/modules/full-screen";
-import axios from "axios";
-import "./styles/EVSalesPivot.css"; 
-
-// Initialize Highcharts modules
-HighchartsExporting(Highcharts);
-HighchartsFullScreen(Highcharts);
+import "./styles/EVSalesPivot.css"; // Ensure this path is correct
 
 const EVSalesPivot = () => {
   const [data, setData] = useState([]);
@@ -24,10 +17,10 @@ const EVSalesPivot = () => {
   useEffect(() => {
     const fetchPivotData = async () => {
       try {
-        const response = await axios.get(
+        const response = await fetch(
           "http://localhost:3000/evTimeSeries?query=pivot"
         );
-        const fetchedData = response.data;
+        const fetchedData = await response.json();
 
         if (fetchedData.length === 0) {
           setError("No data available.");
@@ -42,8 +35,10 @@ const EVSalesPivot = () => {
 
         setYears(yearKeys);
 
-        // Extract state names
-        const stateNames = [...new Set(fetchedData.map((item) => item.State))].sort();
+        // Extract unique state names using Set to avoid duplicates
+        const stateNames = [
+          ...new Set(fetchedData.map((item) => item.State)),
+        ].sort();
 
         setStates(stateNames);
 
@@ -78,15 +73,22 @@ const EVSalesPivot = () => {
     setSelectedState(e.target.value);
   };
 
-  // Prepare series data based on selected state
+  // Prepare series data based on selected state and total sales
   const prepareSeriesData = () => {
     if (!selectedState) return [];
 
-    const selectedStateData = data.find((item) => item.State === selectedState);
+    const selectedStateData = data.find(
+      (item) => item.State === selectedState
+    );
 
     if (!selectedStateData) return [];
 
     return [
+      {
+        name: "Total Sales",
+        data: years.map((year) => totalSales[year]),
+        color: "rgba(211, 211, 211, 0.5)",
+      },
       {
         name: selectedState,
         data: years.map((year) => selectedStateData[year]),
@@ -100,78 +102,160 @@ const EVSalesPivot = () => {
     ];
   };
 
-  const chartOptions = {
-    chart: {
-      type: "column",
-      events: {
-        fullscreenChange: function () {
-          const isFullScreen = this.fullscreen.isOpen;
-          this.update({
-            title: {
-              text: isFullScreen
-                ? `EV Sales Pivot Chart - ${selectedState} (Full Screen)`
-                : `EV Sales Pivot Chart - ${selectedState}`,
-            },
-          });
-        },
-      },
-    },
-    title: {
-      text: `EV Sales Pivot Chart - ${selectedState}`,
-    },
-    xAxis: {
-      categories: years,
-      title: { text: "Year" },
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: "Number of EV Sales",
-      },
-      labels: {
-        formatter: function () {
-          return this.value;
-        },
-      },
-    },
-    tooltip: {
-      formatter: function () {
-        const total = this.series.chart.options.totals[this.x] || 0;
-        return `<b>${this.x}</b><br/>${this.series.name}: ${this.y}<br/>Total: ${total}<br/>Ratio: ${((this.y / total) * 100).toFixed(4)}%`;
-      },
-    },
-    plotOptions: {
-      column: {
-        stacking: "normal",
-        dataLabels: {
-          enabled: true,
-          formatter: function () {
-            return this.y;
+  // Prepare pie chart data based on selected state
+  const preparePieChartData = () => {
+    if (!selectedState) return [];
+
+    const selectedStateData = data.find(
+      (item) => item.State === selectedState
+    );
+
+    if (!selectedStateData) return [];
+
+    return years.map((year) => ({
+      name: year,
+      y: selectedStateData[year],
+    }));
+  };
+
+  const chartOptions = useMemo(
+    () => ({
+      chart: {
+        type: "column",
+        events: {
+          fullscreenChange: function () {
+            const isFullScreen = this.fullscreen.isOpen;
+            this.update({
+              title: {
+                text: isFullScreen
+                  ? `EV Sales Pivot Chart - ${selectedState} (Full Screen)`
+                  : `EV Sales Pivot Chart - ${selectedState}`,
+              },
+            });
           },
         },
       },
-    },
-    series: prepareSeriesData(),
-    exporting: {
-      enabled: true,
-      buttons: {
-        contextButton: {
-          menuItems: [
-            "viewFullscreen",
-            "printChart"
-          ],
+      title: {
+        text: `EV Sales Pivot Chart - ${selectedState}`,
+      },
+      xAxis: {
+        categories: years,
+        title: { text: "Year" },
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: "Number of EV Sales",
+        },
+        labels: {
+          formatter: function () {
+            return this.value;
+          },
         },
       },
-    },
-    credits: {
-      enabled: false, // Remove Highcharts credits
-    },
-    totals: totalSales,
-  };
+      tooltip: {
+        formatter: function () {
+          const year = this.x;
+          const stateSales =
+            this.series.name === selectedState ? this.y : null;
+          const total = totalSales[year] || 0;
+          const ratio =
+            stateSales ? ((stateSales / total) * 100).toFixed(2) : null;
+
+          if (this.series.name === selectedState) {
+            return `<b>${year}</b><br/>${selectedState}: ${stateSales}<br/>Total: ${total}<br/>Ratio: ${ratio}%`;
+          } else if (this.series.name === "Total Sales") {
+            return `<b>${year}</b><br/>Total Sales: ${total}`;
+          }
+          return `<b>${year}</b>`;
+        },
+      },
+      plotOptions: {
+        column: {
+          stacking: null,
+          dataLabels: {
+            enabled: true,
+            formatter: function () {
+              return this.y;
+            },
+          },
+        },
+      },
+      series: prepareSeriesData(),
+      exporting: {
+        enabled: true,
+        buttons: {
+          contextButton: {
+            menuItems: [
+              "viewFullscreen",
+              "printChart"
+            ],
+          },
+        },
+      },
+      credits: {
+        enabled: false,
+      },
+      totals: totalSales,
+    }),
+    [selectedState, years, totalSales]
+  );
+
+  const pieChartOptions = useMemo(
+    () => ({
+      chart: {
+        type: "pie",
+        backgroundColor: "#f0f3f4",
+      },
+      title: {
+        text: `EV Sales Distribution for ${selectedState} (2014-2024)`,
+      },
+      tooltip: {
+        pointFormat: "<b>{point.y}</b> EVs ({point.percentage:.1f}%)",
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: "pointer",
+          dataLabels: {
+            enabled: true,
+            format: "{point.name}: {point.percentage:.1f}%",
+          },
+        },
+      },
+      series: [
+        {
+          name: "EV Sales",
+          data: preparePieChartData(),
+        },
+      ],
+      credits: {
+        enabled: false,
+      },
+      exporting: {
+        enabled: true,
+        buttons: {
+          contextButton: {
+            menuItems: [
+              "viewFullscreen",
+              "printChart",
+              "separator",
+              "downloadPNG",
+              "downloadJPEG",
+              "downloadPDF",
+              "downloadSVG",
+            ],
+          },
+        },
+      },
+    }),
+    [selectedState, years, data]
+  );
 
   if (loading)
     return <div className="status-message">Loading pivot chart...</div>;
-  if (error) return <div className="status-message error">Error: {error}</div>;
+  if (error)
+    return <div className="status-message error">Error: {error}</div>;
 
   return (
     <div className="pivot-container">
@@ -181,6 +265,7 @@ const EVSalesPivot = () => {
           id="state-select"
           value={selectedState}
           onChange={handleStateChange}
+          aria-label="Select State for EV Sales Pivot Chart"
         >
           {states.map((state) => (
             <option key={state} value={state}>
@@ -190,6 +275,7 @@ const EVSalesPivot = () => {
         </select>
       </div>
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
+      <HighchartsReact highcharts={Highcharts} options={pieChartOptions} />
     </div>
   );
 };

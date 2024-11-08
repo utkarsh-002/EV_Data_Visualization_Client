@@ -1,7 +1,7 @@
 // PenetrationChart.js
 
 import {React, useState, useEffect} from "react";
-import Highcharts from "highcharts";
+import Highcharts, { chart } from "highcharts";
 import Highcharts3D from "highcharts/highcharts-3d";
 import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsReact from "highcharts-react-official";
@@ -66,55 +66,24 @@ const PenetrationChart = () => {
     return acc;
   }, {});
 
-  // Convert the aggregated data into an array and sort it
   const chartData = Object.keys(aggregatedElectric).map((state) => ({
     name: state,
     y: aggregatedElectric[state],
+    z: aggregatedTotal[state],
   }));
 
   chartData.sort((a, b) => b.y - a.y);
-
-
-  // Pie Chart Options
-  const pieOptions = {
-    chart: {
-      type: "pie",
-      options3d: {
-        enabled: true,
-        alpha: 45,
-      },
-      backgroundColor: "#f0f3f4",
-    },
-    title: {
-      text: "Electric Vehicle Penetration by State (All States)"
-    },
-    tooltip: {
-      pointFormat: "<b>{point.y}</b> EVs ({point.percentage:.1f}%)",
-    },
-    plotOptions: {
-      pie: {
-        allowPointSelect: true,
-        cursor: "pointer",
-        depth: 35,
-        dataLabels: {
-          enabled: true,
-          format: "{point.name}: {point.percentage:.1f}%",
-        },
-      },
-    },
-    series: [
-      {
-        name: "Electric Vehicles",
-        data: chartData,
-      },
-    ],
-  };
 
   // Bar Chart Options
   const barOptions = {
     chart: {
       type: "bar",
       backgroundColor: "#f0f3f4",
+      height: 750,
+      scrollablePlotArea: {
+        scrollPositionX: 1,
+        scrollPositionY: 1,
+      },
     },
     title: {
       text: "Electric Vehicle Penetration by State (All States)",
@@ -132,8 +101,9 @@ const PenetrationChart = () => {
     },
     yAxis: {
       min: 0,
+      tickInterval: 500,
       title: {
-        text: "Number of Electric Vehicles",
+        text: "Number of EV Sales",
         align: "high",
       },
       labels: {
@@ -141,14 +111,23 @@ const PenetrationChart = () => {
       },
     },
     tooltip: {
-      valueSuffix: " EVs",
+      formatter: function () {
+      const stateName = chartData.find((item) => item.name === this.x);
+      const totalEVSales = stateName.y;
+      const totalSales = stateName.z;
+      const ratio = totalEVSales / totalSales;
+      return `<b>${this.x}</b><br/>
+        Total EV Sales: ${totalEVSales}<br/>
+        Total Vehicle Sales: ${totalSales}<br/>
+        EV Penetration Rate: ${(ratio * 100).toFixed(4)}%`;
+      },
     },
     plotOptions: {
       bar: {
         dataLabels: {
-          enabled: true,
+          enabled: false,
         },
-      },
+      }
     },
     legend: {
       enabled: false,
@@ -162,10 +141,57 @@ const PenetrationChart = () => {
     ],
   };
 
+  const chartOption = {
+    chart: {
+      type: "line",
+      height: 650,
+      scrollablePlotArea: {
+        minWidth: 700,
+        scrollPositionX: 1,
+      }
+    },
+    title: {
+      text: "Electric Vehicle Penetration (EV vs Total Sales)",
+    },
+    xAxis: {
+      categories: chartData.map((item) => item.name),
+      title: { text: "State" },
+    },
+    yAxis: {
+      title: { text: "Ratio(EV vs Total Vehicle)" },
+      labels: { format: "{value}" },
+    },
+    series: [
+      {
+        name: "Ratio",
+        data: chartData.map((item) => item.y / item.z),
+        color: "#3498db",
+        marker: {
+          symbol: "circle",
+          radius: 5,
+        },
+      },
+    ],
+    exporting: {
+      enabled: true,
+      buttons: {
+        contextButton: {
+          menuItems: ["viewFullscreen", "printChart"],
+        },
+      },
+    },
+    credits: {
+      enabled: false,
+    },
+    tooltip: {
+      pointFormat: "{series.name}: <b>{point.y}</b>",
+    },
+  };
+
   return (
     <div className="penetration-chart">
       <div className="chart-container">
-        <HighchartsReact highcharts={Highcharts} options={pieOptions} />
+        <HighchartsReact highcharts={Highcharts} options={chartOption} />
       </div>
       <div className="chart-container">
         <HighchartsReact highcharts={Highcharts} options={barOptions} />

@@ -1,5 +1,3 @@
-// SalesChart.js
-
 import React, { useEffect, useState, useMemo } from "react";
 import Highcharts, { color } from "highcharts";
 import HighchartsReact from "highcharts-react-official";

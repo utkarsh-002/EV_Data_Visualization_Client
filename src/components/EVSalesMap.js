@@ -64,6 +64,11 @@ const EVSalesMap = () => {
   const chartOptions = {
     chart: {
       type: "line",
+      height: 650,
+      scrollablePlotArea: {
+        minWidth: 700,
+        scrollPositionX: 1,
+      },
       events: {
         fullscreenChange: function () {
           const isFullScreen = this.fullscreen.isOpen;
@@ -75,7 +80,7 @@ const EVSalesMap = () => {
             },
           });
         },
-      },
+      }
     },
     title: {
       text: `Electric Vehicle Penetration - ${selectedState}`,
@@ -92,7 +97,7 @@ const EVSalesMap = () => {
       {
         name: "Penetration",
         data: filteredData.map((item) => item.Penetration),
-        color: "#3498db", // Change line color
+        color: "#3498db",
         marker: {
           symbol: "circle",
           radius: 5,
@@ -103,15 +108,12 @@ const EVSalesMap = () => {
       enabled: true,
       buttons: {
         contextButton: {
-          menuItems: [
-            "viewFullscreen",
-            "printChart"
-          ],
+          menuItems: ["viewFullscreen", "printChart"],
         },
       },
     },
     credits: {
-      enabled: false, // Remove Highcharts credits
+      enabled: false,
     },
     tooltip: {
       pointFormat: "{series.name}: <b>{point.y}%</b>",
@@ -124,7 +126,6 @@ const EVSalesMap = () => {
 
   return (
     <div className="map-container">
-      <h2>EV_Sales Penetration</h2>
       <div className="dropdown-filter">
         <label htmlFor="state-select">Select State: </label>
         <select
