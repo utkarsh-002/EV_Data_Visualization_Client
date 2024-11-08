@@ -100,6 +100,7 @@ body, html, #root {
 
 .dashboard-sidebar ul {
   list-style-type: none;
+  list-style: none;
   padding: 0;
   margin: 0;
 }
@@ -110,10 +111,34 @@ body, html, #root {
   border-bottom: 1px solid #2c3e50;
 }
 
+.dashboard-sidebar li.sidebar-heading {
+  font-weight: bold;
+  padding: 15px 15px 5px;
+  cursor: pointer;
+  color: white;
+  background-color: #2c3e50;
+  border-top: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-sidebar li.sidebar-heading:first-of-type {
+  border-top: none; 
+}
+
 .dashboard-sidebar li:hover,
-.dashboard-sidebar li.active {
+.dashboard-sidebar li.active:hover  {
   background-color: #1abc9c; /* Green */
   transition: background-color 0.3s;
+}
+
+.dashboard-sidebar li.sidebar-heading:hover {
+  background-color: #e0e0e0;
+}
+
+.dashboard-sidebar li.active {
+  background-color: #1abc9c; /* Active menu item background */
+  color: #fff;
 }
 
 .dashboard-main {

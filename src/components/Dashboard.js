@@ -7,6 +7,8 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("evSalesByState");
+  const [statewiseOpen, setStatewiseOpen] = useState(true); 
+  const [timeseriesOpen, setTimeseriesOpen] = useState(true);
 
   // Render content based on selected option
   const renderContent = () => {
@@ -34,32 +36,54 @@ const Dashboard = () => {
         <aside className="dashboard-sidebar">
           <ul>
             <li
-              className={selectedOption === "evSalesByState" ? "active" : ""}
-              onClick={() => setSelectedOption("evSalesByState")}
+              className="sidebar-heading"
+              onClick={() => setStatewiseOpen(!statewiseOpen)}
             >
-              EV Sales by State
+              {statewiseOpen ? "▼" : "►"} Statewise
             </li>
+            {statewiseOpen && (
+              <>
+                <li
+                  className={
+                    selectedOption === "evSalesByState" ? "active" : ""
+                  }
+                  onClick={() => setSelectedOption("evSalesByState")}
+                >
+                  EV Sales by State
+                </li>
+                <li
+                  className={
+                    selectedOption === "electricPenetration" ? "active" : ""
+                  }
+                  onClick={() => setSelectedOption("electricPenetration")}
+                >
+                  EV Penetration Chart
+                </li>
+              </>
+            )}
+
             <li
-              className={
-                selectedOption === "electricPenetration" ? "active" : ""
-              }
-              onClick={() => setSelectedOption("electricPenetration")}
+              className="sidebar-heading"
+              onClick={() => setTimeseriesOpen(!timeseriesOpen)}
             >
-              EV Penetration Chart
+              {timeseriesOpen ? "▼" : "►"} Timeseries
             </li>
-            <li
-              className={selectedOption === "evSalesMap" ? "active" : ""}
-              onClick={() => setSelectedOption("evSalesMap")}
-            >
-              EV_Sales-TimeSeries
-            </li>
-            <li
-              className={selectedOption === "pivot" ? "active" : ""}
-              onClick={() => setSelectedOption("pivot")}
-            >
-              EV Sales Pivot
-            </li>
-            {/* Add more sidebar options as needed */}
+            {timeseriesOpen && (
+              <>
+                <li
+                  className={selectedOption === "evSalesMap" ? "active" : ""}
+                  onClick={() => setSelectedOption("evSalesMap")}
+                >
+                  EV_Sales-TimeSeries
+                </li>
+                <li
+                  className={selectedOption === "pivot" ? "active" : ""}
+                  onClick={() => setSelectedOption("pivot")}
+                >
+                  EV Sales Pivot
+                </li>
+              </>
+            )}
           </ul>
         </aside>
         <main className="dashboard-main">{renderContent()}</main>
