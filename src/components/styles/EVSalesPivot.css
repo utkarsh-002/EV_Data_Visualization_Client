@@ -55,6 +55,11 @@
 /* Highcharts Specific Styling */
 .highcharts-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: visible !important;
+}
+
+.highcharts-series .highcharts-point {
+  z-index: 1;
 }
 
 .highcharts-title {

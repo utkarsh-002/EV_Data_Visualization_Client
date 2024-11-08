@@ -158,12 +158,7 @@ const EVSalesPivot = () => {
         contextButton: {
           menuItems: [
             "viewFullscreen",
-            "printChart",
-            "separator",
-            "downloadPNG",
-            "downloadJPEG",
-            "downloadPDF",
-            "downloadSVG",
+            "printChart"
           ],
         },
       },

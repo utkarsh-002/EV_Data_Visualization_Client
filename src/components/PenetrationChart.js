@@ -67,11 +67,7 @@ const PenetrationChart = () => {
     y: aggregatedElectric[state],
   }));
 
-  // Sort data in descending order
   chartData.sort((a, b) => b.y - a.y);
-
-  // Limit to top 10 states for readability
-  const topStatesData = chartData.slice(0, 10);
 
   // Pie Chart Options
   const pieOptions = {

@@ -1,0 +1,35 @@
+.chart-container {
+  width: 100%;
+  max-width: 1200px;
+  max-height: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.highcharts-wrapper {
+  height: 850px;
+  overflow-x: auto;
+}
+
+.chart-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333333;
+  font-family: 'Arial', sans-serif;
+}
+
+.status-message {
+  text-align: center;
+  font-size: 18px;
+  color: #555555;
+  margin-top: 50px;
+  font-family: 'Arial', sans-serif;
+}
+
+.status-message.error {
+  color: #e74c3c;
+  font-weight: bold;
+}
