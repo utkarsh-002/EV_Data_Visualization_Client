@@ -6,7 +6,7 @@ import HighchartsReact from "highcharts-react-official";
 import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsFullScreen from "highcharts/modules/full-screen";
 import axios from "axios";
-import "./styles/EVSalesPivot.css"; // Ensure this path is correct
+import "./styles/EVSalesPivot.css"; 
 
 // Initialize Highcharts modules
 HighchartsExporting(Highcharts);
@@ -17,6 +17,7 @@ const EVSalesPivot = () => {
   const [states, setStates] = useState([]);
   const [years, setYears] = useState([]);
   const [selectedState, setSelectedState] = useState("");
+  const [totalSales, setTotalSales] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,13 +43,25 @@ const EVSalesPivot = () => {
         setYears(yearKeys);
 
         // Extract state names
-        const stateNames = fetchedData.map((item) => item.State);
+        const stateNames = [...new Set(fetchedData.map((item) => item.State))].sort();
+
         setStates(stateNames);
 
         // Set default selected state
         setSelectedState(stateNames[0]);
 
         setData(fetchedData);
+
+        // Calculate total sales per year across all states
+        const totals = {};
+        fetchedData.forEach((item) => {
+          yearKeys.forEach((year) => {
+            totals[year] =
+              (totals[year] || 0) + (parseInt(item[year], 10) || 0);
+          });
+        });
+        setTotalSales(totals);
+
         setLoading(false);
       } catch (err) {
         console.error("Error fetching pivot data:", err);
@@ -77,11 +90,12 @@ const EVSalesPivot = () => {
       {
         name: selectedState,
         data: years.map((year) => selectedStateData[year]),
-        color: "#3498db", // Optional: Customize the series color
+        color: "#3498db",
         marker: {
           symbol: "circle",
           radius: 5,
         },
+        borderWidth: 1,
       },
     ];
   };
@@ -121,9 +135,10 @@ const EVSalesPivot = () => {
       },
     },
     tooltip: {
-      headerFormat: "<b>{point.x}</b><br/>",
-      pointFormat: "{series.name}: {point.y}<br/>Total: {point.y}",
-      shared: true,
+      formatter: function () {
+        const total = this.series.chart.options.totals[this.x] || 0;
+        return `<b>${this.x}</b><br/>${this.series.name}: ${this.y}<br/>Total: ${total}<br/>Ratio: ${((this.y / total) * 100).toFixed(4)}%`;
+      },
     },
     plotOptions: {
       column: {
@@ -156,6 +171,7 @@ const EVSalesPivot = () => {
     credits: {
       enabled: false, // Remove Highcharts credits
     },
+    totals: totalSales,
   };
 
   if (loading)
