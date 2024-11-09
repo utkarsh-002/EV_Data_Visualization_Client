@@ -33,10 +33,11 @@ const PenetrationChart = () => {
           const data = await response.json();
           setSalesData(data);
           const allStatesData = data.map((item) => ({
-            name: item.State,
-            "Electric Vehicles": item["Electric Vehicles"],
-            y: item.Electric,
-            z: item.Total,
+            State: item.State,
+            "Vehicle Category": item["Vehicle Category"],
+            Electric: item.Electric,
+            Total: item.Total,
+            Ratio: item.Ratio,
           }));
           setAllStates(allStatesData);
         } catch (error) {
@@ -79,71 +80,94 @@ const PenetrationChart = () => {
 
   chartData.sort((a, b) => b.y - a.y);
 
-  // Bar Chart Options
+  const vehicleCategories = [
+    "Others",
+    "2-Wheelers",
+    "4-Wheelers",
+    "3-Wheelers",
+    "Bus"
+  ];
+
+  // Prepare categories for xAxis (States)
+  const categories = [...new Set(allStates.map((item) => item.State))];
+
+  // Prepare series data
+  const seriesData = vehicleCategories.map((category) => ({
+    name: category,
+    data: categories.map((state) => {
+      const stateData = allStates.find(
+        (item) => item.State === state && item["Vehicle Category"] === category
+      );
+      return stateData
+        ? {
+            y: stateData.Electric,
+            ratio: parseFloat(stateData.Ratio) * 100,
+          }
+        : { y: 0, ratio: 0 };
+    }),
+  }));
+
   const barOptions = {
     chart: {
-      type: "bar",
+      type: "column",
       backgroundColor: "#f0f3f4",
-      height: 750,
-      scrollablePlotArea: {
-        minHeight: allStates.length * 50,
-        scrollPositionY: 1,
-      },
+      height: 650,
+      marginBottom: 150,
     },
     title: {
-      text: "Electric Vehicle Penetration by State (All States)",
+      text: "Electric Vehicle Sales by State and Vehicle Category",
     },
     xAxis: {
-      categories: chartData.map((item) => item.name),
-      title: {
-        text: null,
-      },
+      categories: categories,
+      title: { text: "State" },
       labels: {
+        rotation: -45,
         style: {
           fontSize: "12px",
+          fontFamily: "Verdana, sans-serif",
         },
       },
+      lineColor: "#000000",
+      lineWidth: 1,
     },
     yAxis: {
       min: 0,
-      tickInterval: 500,
-      title: {
-        text: "Number of EV Sales",
-        align: "high",
-      },
-      labels: {
-        overflow: "justify",
-      },
+      title: { text: "Number of Electric Vehicle Sales" },
+      labels: { format: "{value}" },
+      gridLineWidth: 1,
+      startOnTick: true,
+      endOnTick: true, 
     },
     tooltip: {
+      shared: true,
       formatter: function () {
-      const stateName = chartData.find((item) => item.name === this.x);
-      const totalEVSales = stateName.y;
-      const totalSales = stateName.z;
-      const ratio = totalEVSales / totalSales;
-      return `<b>${this.x}</b><br/>
-        Total EV Sales: ${totalEVSales}<br/>
-        Total Vehicle Sales: ${totalSales}<br/>
-        EV Penetration Rate: ${(ratio * 100).toFixed(4)}%`;
+        let tooltipText = `<b>${this.x}</b>`;
+        this.points.forEach((point) => {
+          tooltipText += `<br/>${point.series.name}: ${point.y} EVs (Ratio: ${point.point.ratio.toFixed(
+            4
+          )}%)`;
+        });
+        return tooltipText;
       },
     },
     plotOptions: {
-      bar: {
+      column: {
+        stacking: null,
         dataLabels: {
           enabled: false,
         },
-      }
-    },
-    legend: {
-      enabled: false,
-    },
-    series: [
-      {
-        name: "Electric Vehicles",
-        data: chartData.map((item) => item.y),
-        color: "#1abc9c",
       },
-    ],
+    },
+    series: seriesData,
+    credits: { enabled: false },
+    exporting: {
+      enabled: true,
+      buttons: {
+        contextButton: {
+          menuItems: ["viewFullscreen", "printChart"],
+        },
+      },
+    },
   };
 
   const chartOption = {
