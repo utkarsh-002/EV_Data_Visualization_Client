@@ -42,7 +42,6 @@ const SalesChart = () => {
         const top10 = statesWithRatio.slice(0, 10);
         setTop10States(top10);
 
-        // Prepare all states data with top10 flag
         const allStatesData = statesWithRatio.map((item) => ({
           name: item.state,
           y: item.sales,
@@ -61,11 +60,6 @@ const SalesChart = () => {
 
     fetchData();
   }, []);
-
-  const top10Colors = [
-    "#FF5733", "#33FF57", "#3357FF", "#F1C40F", "#9B59B6",
-    "#E67E22", "#1ABC9C", "#34495E", "#E74C3C", "#2ECC71"
-  ];
 
   const chartOptions = useMemo(
     () => ({
@@ -104,6 +98,7 @@ const SalesChart = () => {
         tickInterval: 500,
         title: {
           text: "Number of EV Sales",
+          align: "high",
         },
       },
       tooltip: {
@@ -122,17 +117,11 @@ const SalesChart = () => {
           colorByPoint: false,
           dataLabels: {
             enabled: false,
-          },
-          pointWidth: 20,
-          groupPadding: 0.1,
-          pointpadding: 0.1,
+          }
         },
       },
       legend: {
-        enabled: true,
-        layout: "vertical",
-        align: "right",
-        verticalAlign: "middle",
+        enabled: false,
       },
       series: [
         {
@@ -142,9 +131,7 @@ const SalesChart = () => {
               (top) => top.state === item.name
             );
             const color =
-              item.isTop10 && colorIndex !== -1
-                ? top10Colors[colorIndex % top10Colors.length]
-                : "#7FB3D5";
+              item.isTop10 && colorIndex !== -1 ? "#E74C3C" : "#7FB3D5";
             return {
               name: item.name,
               y: item.y,

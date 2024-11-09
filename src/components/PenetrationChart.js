@@ -1,5 +1,3 @@
-// PenetrationChart.js
-
 import {React, useState, useEffect} from "react";
 import Highcharts, { chart } from "highcharts";
 import Highcharts3D from "highcharts/highcharts-3d";
@@ -7,7 +5,6 @@ import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsReact from "highcharts-react-official";
 import "./styles/PenetrationChart.css";
 
-// Initialize the 3D and exporting modules
 Highcharts3D(Highcharts);
 HighchartsExporting(Highcharts);
 
@@ -16,6 +13,7 @@ const PenetrationChart = () => {
     const [salesData, setSalesData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [allStates, setAllStates] = useState([]);
 
     // Fetch data when the component mounts
     useEffect(() => {
@@ -34,6 +32,13 @@ const PenetrationChart = () => {
 
           const data = await response.json();
           setSalesData(data);
+          const allStatesData = data.map((item) => ({
+            name: item.State,
+            "Electric Vehicles": item["Electric Vehicles"],
+            y: item.Electric,
+            z: item.Total,
+          }));
+          setAllStates(allStatesData);
         } catch (error) {
           console.error("Error fetching data:", error);
           setError(error.message);
@@ -81,7 +86,7 @@ const PenetrationChart = () => {
       backgroundColor: "#f0f3f4",
       height: 750,
       scrollablePlotArea: {
-        scrollPositionX: 1,
+        minHeight: allStates.length * 50,
         scrollPositionY: 1,
       },
     },

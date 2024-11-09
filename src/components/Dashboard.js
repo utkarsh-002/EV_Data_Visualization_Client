@@ -3,6 +3,7 @@ import SalesChart from "./Saleschart";
 import PenetrationChart from "./PenetrationChart";
 import EVSalesMap from "./EVSalesMap";
 import EVSalesPivot from "./EVSalesPivot";
+import TimeSeriesCategory from "./timeSeriesCategory";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -21,6 +22,8 @@ const Dashboard = () => {
         return <EVSalesMap/>;
       case "pivot":
         return <EVSalesPivot/>;
+      case "timeSeriesCategory":
+        return <TimeSeriesCategory/>;
       // Add more cases for additional options
       default:
         return <PenetrationChart />;
@@ -81,6 +84,12 @@ const Dashboard = () => {
                   onClick={() => setSelectedOption("pivot")}
                 >
                   EV Sales Pivot
+                </li>
+                <li
+                  className={selectedOption === "timeSeriesCategory" ? "active" : ""}
+                  onClick={() => setSelectedOption("timeSeriesCategory")}
+                >
+                  EV_Sales_Category-wise
                 </li>
               </>
             )}
