@@ -1,9 +1,9 @@
-import {React, useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Highcharts, { chart } from "highcharts";
 import Highcharts3D from "highcharts/highcharts-3d";
 import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsReact from "highcharts-react-official";
-import "./styles/PenetrationChart.css";
+import "./styles/PenetrationChart.css"; // Import the customized CSS if available
 
 Highcharts3D(Highcharts);
 HighchartsExporting(Highcharts);

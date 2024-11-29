@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Highcharts, { color } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import "./styles/Saleschart.css";
+import "./styles/Saleschart.css"; // Ensure the customized CSS file is imported
 
 const SalesChart = () => {
   const [data, setData] = useState([]);
@@ -95,7 +95,7 @@ const SalesChart = () => {
       },
       yAxis: {
         min: 0,
-        tickInterval: 500,
+        //tickInterval: 500,
         title: {
           text: "Number of EV Sales",
           align: "high",
@@ -172,7 +172,7 @@ const SalesChart = () => {
       backgroundColor: "#f0f3f4",
     },
     title: {
-      text: "Electric Vehicle Penetration by State (All States)",
+      text: "Percentage Share of EV Sales by State (2014-2024)",
     },
     tooltip: {
       pointFormat: "<b>{point.y}</b> EVs ({point.percentage:.1f}%)",

@@ -5,26 +5,30 @@ import EVSalesMap from "./EVSalesMap";
 import EVSalesPivot from "./EVSalesPivot";
 import TimeSeriesCategory from "./timeSeriesCategory";
 import "./Dashboard.css";
+import DashboardCards from "./DashboardCards";
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("evSalesByState");
-  const [statewiseOpen, setStatewiseOpen] = useState(true); 
+  const [statewiseOpen, setStatewiseOpen] = useState(true);
   const [timeseriesOpen, setTimeseriesOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Render content based on selected option
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   const renderContent = () => {
     switch (selectedOption) {
       case "evSalesByState":
-        return <SalesChart/>;
+        return <SalesChart />;
       case "electricPenetration":
-        return <PenetrationChart/>;
+        return <PenetrationChart />;
       case "evSalesMap":
-        return <EVSalesMap/>;
+        return <EVSalesMap />;
       case "pivot":
-        return <EVSalesPivot/>;
+        return <EVSalesPivot />;
       case "timeSeriesCategory":
-        return <TimeSeriesCategory/>;
-      // Add more cases for additional options
+        return <TimeSeriesCategory />;
       default:
         return <PenetrationChart />;
     }
@@ -32,69 +36,87 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <header className="dashboard-header">
-        <h1>EV Data Visualization Dashboard</h1>
-      </header>
-      <div className="dashboard-content">
-        <aside className="dashboard-sidebar">
-          <ul>
-            <li
-              className="sidebar-heading"
-              onClick={() => setStatewiseOpen(!statewiseOpen)}
-            >
-              {statewiseOpen ? "▼" : "►"} Statewise
-            </li>
-            {statewiseOpen && (
-              <>
-                <li
-                  className={
-                    selectedOption === "evSalesByState" ? "active" : ""
-                  }
-                  onClick={() => setSelectedOption("evSalesByState")}
-                >
-                  EV Sales by State
-                </li>
-                <li
-                  className={
-                    selectedOption === "electricPenetration" ? "active" : ""
-                  }
-                  onClick={() => setSelectedOption("electricPenetration")}
-                >
-                  EV Penetration Chart
-                </li>
-              </>
-            )}
+      {/* Hamburger Button */}
+      <button className="hamburger-btn" onClick={toggleSidebar}>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-            <li
-              className="sidebar-heading"
-              onClick={() => setTimeseriesOpen(!timeseriesOpen)}
-            >
-              {timeseriesOpen ? "▼" : "►"} Timeseries
-            </li>
-            {timeseriesOpen && (
-              <>
-                <li
-                  className={selectedOption === "evSalesMap" ? "active" : ""}
-                  onClick={() => setSelectedOption("evSalesMap")}
-                >
-                  EV_Sales-TimeSeries
-                </li>
-                <li
-                  className={selectedOption === "pivot" ? "active" : ""}
-                  onClick={() => setSelectedOption("pivot")}
-                >
-                  EV Sales Pivot
-                </li>
-                <li
-                  className={selectedOption === "timeSeriesCategory" ? "active" : ""}
-                  onClick={() => setSelectedOption("timeSeriesCategory")}
-                >
-                  EV_Sales_Category-wise
-                </li>
-              </>
-            )}
-          </ul>
-        </aside>
+      {/* Overlay */}
+      <div
+        className={`sidebar-overlay ${isSidebarOpen ? "active" : ""}`}
+        onClick={toggleSidebar}
+      ></div>
+
+      {/* Sidebar */}
+      <aside className={`dashboard-sidebar ${isSidebarOpen ? "active" : ""}`}>
+        <ul>
+          <li
+            className="sidebar-heading"
+            onClick={() => setStatewiseOpen(!statewiseOpen)}
+          >
+            {statewiseOpen ? "▼" : "►"} Statewise
+          </li>
+          {statewiseOpen && (
+            <>
+              <li
+                className={
+                  selectedOption === "evSalesByState" ? "active" : ""
+                }
+                onClick={() => setSelectedOption("evSalesByState")}
+              >
+                EV Sales by State
+              </li>
+              <li
+                className={
+                  selectedOption === "electricPenetration" ? "active" : ""
+                }
+                onClick={() => setSelectedOption("electricPenetration")}
+              >
+                EV Penetration Chart
+              </li>
+            </>
+          )}
+
+          <li
+            className="sidebar-heading"
+            onClick={() => setTimeseriesOpen(!timeseriesOpen)}
+          >
+            {timeseriesOpen ? "▼" : "►"} Timeseries
+          </li>
+          {timeseriesOpen && (
+            <>
+              <li
+                className={
+                  selectedOption === "evSalesMap" ? "active" : ""
+                }
+                onClick={() => setSelectedOption("evSalesMap")}
+              >
+                EV_Sales-TimeSeries
+              </li>
+              <li
+                className={selectedOption === "pivot" ? "active" : ""}
+                onClick={() => setSelectedOption("pivot")}
+              >
+                EV Sales Pivot
+              </li>
+              <li
+                className={
+                  selectedOption === "timeSeriesCategory" ? "active" : ""
+                }
+                onClick={() => setSelectedOption("timeSeriesCategory")}
+              >
+                EV_Sales_Category-wise
+              </li>
+            </>
+          )}
+        </ul>
+      </aside>
+
+      {/* Main Content */}
+      <div className={`dashboard-content ${isSidebarOpen ? "expanded" : ""}`}>
+        <DashboardCards />
         <main className="dashboard-main">{renderContent()}</main>
       </div>
     </div>

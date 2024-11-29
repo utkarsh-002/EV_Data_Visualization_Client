@@ -6,7 +6,7 @@ import HighchartsReact from "highcharts-react-official";
 import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsFullScreen from "highcharts/modules/full-screen";
 import axios from "axios";
-import "./styles/EVSalesMap.css";
+import "./styles/EVSalesMap.css"; // Ensure the customized CSS file is imported
 
 // Initialize Highcharts modules
 HighchartsExporting(Highcharts);

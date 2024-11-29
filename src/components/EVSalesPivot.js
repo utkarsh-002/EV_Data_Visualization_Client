@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import "./styles/EVSalesPivot.css"; // Ensure this path is correct
+import "./styles/EVSalesPivot.css"; // Ensure the customized CSS file is imported
 
 const EVSalesPivot = () => {
   const [data, setData] = useState([]);
@@ -128,15 +128,15 @@ const EVSalesPivot = () => {
             this.update({
               title: {
                 text: isFullScreen
-                  ? `EV Sales Pivot Chart - ${selectedState} (Full Screen)`
-                  : `EV Sales Pivot Chart - ${selectedState}`,
+                  ? `Year-wise Comparison of Total and State-specific EV Sales - ${selectedState} (Full Screen)`
+                  : `Year-wise Comparison of Total and State-specific EV Sales - ${selectedState}`,
               },
             });
           },
         },
       },
       title: {
-        text: `EV Sales Pivot Chart - ${selectedState}`,
+        text: `Year-wise Comparison of Total and State-specific EV Sales - ${selectedState}`,
       },
       xAxis: {
         categories: years,
@@ -239,11 +239,6 @@ const EVSalesPivot = () => {
             menuItems: [
               "viewFullscreen",
               "printChart",
-              "separator",
-              "downloadPNG",
-              "downloadJPEG",
-              "downloadPDF",
-              "downloadSVG",
             ],
           },
         },

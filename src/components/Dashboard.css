@@ -1,199 +1,191 @@
 /* Dashboard.css */
 
+/* Base styles */
 body, html, #root {
   height: 100%;
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Base container */
 .dashboard-container {
   display: flex;
-  flex-direction: column;
-  margin-left: 20px;
-  height: 100%-60px;
-  font-family: Arial, sans-serif;
-}
-
-.dashboard-header {
-  position: fixed;
-  top: 0;
-  left: 0;
+  height: 100vh;
   width: 100%;
-  height: 90px; /* Adjust as needed */
-  background-color: #34495e; /* Dark blue-gray */
-  color: #ecf0f1; /* Light gray */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000; /* Ensures the header stays on top */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 24px;
+/* Hamburger Menu */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  z-index: 1001;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
 }
 
-.dashboard-content {
-  display: flex;
-  flex: .5;
-  margin-top: 90px;
-  margin-left: 250px;
-  padding: 20px;
-  height: calc(100%);
-  overflow-y: auto;
-  transition: margin-left 0.3s ease;
-  background-color: #f0f3f4;
+.hamburger-btn span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 4px 0;
+  background-color: #ecf0f1;
+  transition: all 0.3s ease;
 }
 
+/* Sidebar */
 .dashboard-sidebar {
-  width: 250px;
-  background-color: #34495e; /* Medium blue */
+  width: 200px;
+  background-color: #34495e;
   color: #ecf0f1;
   overflow-y: auto;
   position: fixed;
-  top: 90px;
-  left: 0;
-  width: 250px;
-  height: 100%-60px;
-  z-index: 999;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  transition: width 0.3s ease;
-}
-
-.dashboard-sidebar .dropdown-toggle {
-  width: 100%;
-  min-height: 800px; /* Adjust as needed */
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.dashboard-sidebar .dropdown-toggle:hover {
-  background-color: #3d566e;
-}
-
-.dashboard-sidebar .dropdown-menu {
-  display: none;
-  background-color: #34495e;
-  border-radius: 4px;
-  padding: 10px;
-  position: absolute;
   top: 0;
-  left: 100%;
-  z-index: 1000;
-}
-
-.dashboard-sidebar .dropdown-menu li {
-  padding: 10px;
-  border-bottom: 1px solid #34495e;
-  cursor: pointer;
-}
-
-.dashboard-sidebar .dropdown-menu li:hover,
-.dashboard-sidebar .dropdown-menu li.active {
-  background-color: #3d566e;
+  left: 0;
+  height: 100%;
+  z-index: 999;
+  transition: transform 0.3s ease;
+  padding: 20px 10px;
 }
 
 .dashboard-sidebar ul {
-  list-style-type: none;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .dashboard-sidebar li {
-  padding: 15px 20px;
+  padding: 12px 15px;
   cursor: pointer;
   border-bottom: 1px solid #2c3e50;
-}
-
-.dashboard-sidebar li.sidebar-heading {
-  font-weight: bold;
-  padding: 15px 15px 5px;
-  cursor: pointer;
-  color: #333;
-  background-color: #f5f5f5;
-  border-top: 1px solid #ddd;
-}
-
-.dashboard-sidebar li.sidebar-heading:first-of-type {
-  border-top: none; /* Remove top border for the first heading */
+  font-size: 14px;
 }
 
 .dashboard-sidebar li:hover,
 .dashboard-sidebar li.active {
-  background-color: #1abc9c; /* Green */
+  background-color: #1abc9c;
   transition: background-color 0.3s;
 }
 
-.dashboard-main {
+/* Content area */
+.dashboard-content {
   flex: 1;
+  margin-left: 200px;
   padding: 20px;
-  background-color: #f0f3f4; /* Light gray */
-  overflow-y: auto;
+  overflow-x: hidden;
+  width: calc(100% - 200px); /* Account for sidebar */
+  box-sizing: border-box;
 }
 
-.dashboard-main h2 {
+/* Cards container */
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap; /* Allow cards to wrap */
+  gap: 20px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.dashboard-card {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 250px; /* Minimum card width */
+  max-width: calc(33.33% - 20px); /* Maximum width with gap */
+}
+
+.dashboard-card-title {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.dashboard-card-value {
+  font-size: 24px;
+  font-weight: bold;
   color: #2c3e50;
 }
 
-.chart-container,
-.map-container {
-  width: 100%;
-  height: 800px;
+.dashboard-card-trend {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 12px;
 }
 
-@media (max-width: 768px) {
-  .dashboard-content {
-    flex-direction: column;
+.dashboard-card-trend.positive {
+  color: #2ecc71;
+}
+
+.dashboard-card-trend.negative {
+  color: #e74c3c;
+}
+
+/* Chart Container */
+.chart-container {
+  width: 100%;
+  height: 600px;
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .hamburger-btn {
+    display: block;
   }
 
   .dashboard-sidebar {
+    transform: translateX(-200px);
+  }
+
+  .dashboard-sidebar.active {
+    transform: translateX(0);
+  }
+
+  .dashboard-content {
+    margin-left: 0;
     width: 100%;
   }
-}
 
-.dashboard-sidebar .dropdown-toggle {
-  cursor: pointer;
-  padding: 10px;
-}
+  .dashboard-cards {
+    flex-direction: column;
+  }
 
-.dashboard-sidebar .dropdown-menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  .dashboard-card {
+    width: 100%;
+    margin-bottom: 15px;
+    max-width: 100%;
+  }
 
-.dashboard-sidebar .dropdown-menu li {
-  padding: 10px;
-  cursor: pointer;
-}
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
 
-.dashboard-sidebar .dropdown-menu li.active,
-.dashboard-sidebar .dropdown-menu li:hover {
-  background-color: #eee;
-}
+  .sidebar-overlay.active {
+    display: block;
+  }
 
-/* Status Messages */
-.status-message {
-  text-align: center;
-  font-size: 18px;
-  color: #7f8c8d;
-  margin-top: 50px;
-  font-family: 'Arial', sans-serif;
-}
-
-.status-message.error {
-  color: #e74c3c;
-  font-weight: bold;
-}
-
-/* Active Menu Item */
-.dashboard-sidebar .dropdown-menu li.active {
-  background-color: #3d566e;
-  font-weight: bold;
+  .chart-container {
+    height: auto;
+    min-height: 400px;
+  }
 }

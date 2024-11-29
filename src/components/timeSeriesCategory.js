@@ -93,7 +93,7 @@ const EVTimeSeries = () => {
         type: "line",
       },
       title: {
-        text: `EV Sales Ratio by Vehicle Category for ${selectedState}`,
+        text: `Trends in EV Sales Ratios Across Vehicle Categories for ${selectedState}`,
       },
       xAxis: {
         categories: years,
